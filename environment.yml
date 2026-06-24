@@ -1,0 +1,17 @@
+name: flickr30k
+channels:
+  - conda-forge
+  - pytorch
+
+dependencies:
+  - python=3.11
+  - pandas
+  - matplotlib
+  - jupyter
+  - notebook
+
+  - pip
+
+  - pip:
+      - datasets==3.6.0
+      - tqdm
