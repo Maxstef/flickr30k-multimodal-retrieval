@@ -114,3 +114,29 @@ def create_binary_dataset(positive_pairs, negative_pairs, seed=42):
     ).reset_index(drop=True)
 
     return binary_dataset
+
+def prepare_binary_dataset(split_data, seed=42):
+    """
+    Prepare a balanced binary image-text matching dataset.
+
+    This function generates positive image-caption pairs, negative
+    image-caption pairs, and combines them into a shuffled binary dataset.
+
+    Args:
+        split_data: Hugging Face Dataset containing a single split.
+        seed: Random seed for reproducibility.
+
+    Returns:
+        A pandas DataFrame containing a balanced binary dataset.
+    """
+    positive_pairs = create_positive_pairs(split_data)
+    negative_pairs = create_negative_pairs(
+        split_data,
+        seed=seed,
+    )
+
+    return create_binary_dataset(
+        positive_pairs,
+        negative_pairs,
+        seed=seed,
+    )
