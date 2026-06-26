@@ -1,7 +1,19 @@
-DATASET_NAME = "nlphuji/flickr30k"
+import torch
 
-RANDOM_SEED = 42
+# Dataset
+DATASET_NAME = "nlphuji/flickr30k"
 
 TRAIN_SPLIT = "train"
 VAL_SPLIT = "val"
 TEST_SPLIT = "test"
+
+# Reproducibility
+RANDOM_SEED = 42
+
+# Device
+if torch.cuda.is_available():
+    DEVICE = "cuda"
+elif torch.backends.mps.is_available():
+    DEVICE = "mps"
+else:
+    DEVICE = "cpu"
