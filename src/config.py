@@ -40,3 +40,12 @@ elif torch.backends.mps.is_available():
     DEVICE = "mps"
 else:
     DEVICE = "cpu"
+
+
+# -----------------------------------------------------------------------------
+# Text
+# -----------------------------------------------------------------------------
+
+VOCAB_MIN_FREQUENCY = 1
+MAX_CAPTION_LENGTH = 32
+EMBEDDING_DIM = 128
