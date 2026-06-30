@@ -1,0 +1,2 @@
+model,split,accuracy,precision,recall,f1,best_epoch,training_time_seconds
+Frozen ResNet18 Neural Classifier,validation,0.7398422090729783,0.6671707451196041,0.9571992110453649,0.7862929358392742,8,668.4760754999952
