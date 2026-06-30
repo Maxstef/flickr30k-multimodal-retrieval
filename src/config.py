@@ -46,6 +46,10 @@ else:
 # Text
 # -----------------------------------------------------------------------------
 
+PAD_TOKEN = "<pad>"
+UNK_TOKEN = "<unk>"
+PAD_IDX = 0
+UNK_IDX = 1
 VOCAB_MIN_FREQUENCY = 1
 MAX_CAPTION_LENGTH = 32
 EMBEDDING_DIM = 128
@@ -56,4 +60,3 @@ EMBEDDING_DIM = 128
 # -----------------------------------------------------------------------------
 
 BATCH_SIZE = 32
-

@@ -1,9 +1,12 @@
 import re
 from collections import Counter
 
-
-PAD_TOKEN = "<pad>"
-UNK_TOKEN = "<unk>"
+from src.config import (
+    PAD_TOKEN,
+    UNK_TOKEN,
+    PAD_IDX,
+    UNK_IDX,
+)
 
 
 def simple_tokenize(text):
@@ -13,7 +16,7 @@ def simple_tokenize(text):
     return re.findall(r"\b\w+\b", text.lower())
 
 
-def build_vocab(captions, min_freq=2):
+def build_vocab(captions, min_freq=1):
     """
     Build a word-to-index vocabulary from training captions.
 
@@ -30,8 +33,8 @@ def build_vocab(captions, min_freq=2):
         counter.update(simple_tokenize(caption))
 
     vocab = {
-        PAD_TOKEN: 0,
-        UNK_TOKEN: 1,
+        PAD_TOKEN: PAD_IDX,
+        UNK_TOKEN: UNK_IDX,
     }
 
     for token, count in counter.items():
@@ -48,14 +51,13 @@ def encode_caption(caption, vocab, max_length=32):
     tokens = simple_tokenize(caption)
 
     token_ids = [
-        vocab.get(token, vocab[UNK_TOKEN])
+        vocab.get(token, UNK_IDX)
         for token in tokens
     ]
 
     token_ids = token_ids[:max_length]
 
     padding_length = max_length - len(token_ids)
-
-    token_ids += [vocab[PAD_TOKEN]] * padding_length
+    token_ids += [PAD_IDX] * padding_length
 
     return token_ids
