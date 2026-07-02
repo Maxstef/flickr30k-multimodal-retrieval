@@ -60,8 +60,11 @@ EMBEDDING_DIM = 128
 # -----------------------------------------------------------------------------
 
 BATCH_SIZE = 32
+FINETUNE_BATCH_SIZE = 128
 LEARNING_RATE = 1e-3
+FINETUNE_LEARNING_RATE = 1e-4
 NUM_EPOCHS = 10
+FINETUNE_NUM_EPOCHS = 5
 
 # -----------------------------------------------------------------------------
 # Model

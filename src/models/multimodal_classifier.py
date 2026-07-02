@@ -24,6 +24,7 @@ class NeuralMultimodalClassifier(nn.Module):
         hidden_dim=256,
         dropout=0.3,
         freeze_image_encoder=True,
+        unfreeze_layer4=False,
     ):
         super().__init__()
 
@@ -45,6 +46,11 @@ class NeuralMultimodalClassifier(nn.Module):
         if freeze_image_encoder:
             for param in self.image_encoder.parameters():
                 param.requires_grad = False
+
+        # Unfreeze layer4 for fine-tuning
+        if unfreeze_layer4:
+            for param in self.image_encoder.layer4.parameters():
+                param.requires_grad = True
 
         # ---------------------------------------------------------------------
         # Text encoder
