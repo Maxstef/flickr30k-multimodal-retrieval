@@ -1,2 +1,0 @@
-model,split,accuracy,precision,recall,f1,best_epoch,training_time_seconds
-Finetune ResNet18 Neural Classifier,validation,0.761439842209073,0.7546589817483189,0.7747534516765286,0.764574209245742,6,5999.180191731999
