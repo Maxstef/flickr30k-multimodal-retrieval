@@ -1,0 +1,2 @@
+model,split,accuracy,precision,recall,f1,best_epoch,training_time_seconds,best_threshold
+Mini-CLIP (Cosine Similarity),validation,0.8882642998027613,0.8800926819849392,0.8990138067061144,0.8894526295248317,16,936.5,0.25
