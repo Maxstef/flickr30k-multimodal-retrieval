@@ -36,3 +36,33 @@ def compute_retrieval_metrics(similarity_matrix):
             },
         ]
     )
+
+
+def image_to_text_top_k_accuracy_multi_caption(
+    similarity_matrix,
+    image_indices,
+    k=1,
+):
+    """
+    Compute image-to-text Top-K retrieval accuracy when each image
+    can have multiple valid captions.
+
+    Args:
+        similarity_matrix: Tensor of shape [num_images, num_captions].
+        image_indices: Tensor/list mapping each caption index to its image index.
+        k: Number of retrieved captions considered.
+
+    Returns:
+        Top-K accuracy.
+    """
+    image_indices = torch.tensor(image_indices)
+
+    top_k_caption_indices = similarity_matrix.topk(k, dim=1).indices
+
+    correct = []
+
+    for image_idx, retrieved_caption_indices in enumerate(top_k_caption_indices):
+        retrieved_image_indices = image_indices[retrieved_caption_indices]
+        correct.append((retrieved_image_indices == image_idx).any())
+
+    return torch.tensor(correct).float().mean().item()
