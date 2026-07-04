@@ -20,6 +20,10 @@ def build_vocab(captions, min_freq=1):
     """
     Build a word-to-index vocabulary from training captions.
 
+    Supports both:
+    - iterable of caption strings
+    - iterable of lists of caption strings
+
     Args:
         captions: Iterable of caption strings.
         min_freq: Minimum frequency required for a token to be included.
@@ -30,7 +34,14 @@ def build_vocab(captions, min_freq=1):
     counter = Counter()
 
     for caption in captions:
-        counter.update(simple_tokenize(caption))
+        # Multiple captions per sample
+        if isinstance(caption, list):
+            for text in caption:
+                counter.update(simple_tokenize(text))
+
+        # Single caption
+        else:
+            counter.update(simple_tokenize(caption))
 
     vocab = {
         PAD_TOKEN: PAD_IDX,

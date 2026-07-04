@@ -66,6 +66,7 @@ LEARNING_RATE = 1e-3
 FINETUNE_LEARNING_RATE = 1e-4
 NUM_EPOCHS = 10
 FINETUNE_NUM_EPOCHS = 5
+CLIP_NUM_EPOCHS = 10
 
 # -----------------------------------------------------------------------------
 # Model
@@ -74,3 +75,4 @@ FINETUNE_NUM_EPOCHS = 5
 IMAGE_FEATURE_DIM = 512
 HIDDEN_DIM = 256
 DROPOUT = 0.3
+PROJECTION_DIM = 256
