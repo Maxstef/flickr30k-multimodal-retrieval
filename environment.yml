@@ -1,17 +1,33 @@
 name: flickr30k
+
 channels:
-  - conda-forge
   - pytorch
+  - conda-forge
 
 dependencies:
   - python=3.11
-  - pandas
-  - matplotlib
+
+  # Core
+  - numpy<2
+  - pandas=2.3.1
+  - scipy=1.16.1
+  - scikit-learn=1.7.1
+  - matplotlib=3.10.5
+
+  # Deep Learning
+  - pytorch=2.2.2
+  - torchvision=0.17.2
+
+  # Notebook
   - jupyter
   - notebook
 
+  # Utilities
+  - pillow
   - pip
 
+  # Packages installed via pip
   - pip:
+      - streamlit==1.45.1
       - datasets==3.6.0
-      - tqdm
+      - tqdm==4.68.3
