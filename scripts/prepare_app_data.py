@@ -113,6 +113,7 @@ def main():
             caption_rows.append(
                 {
                     "caption_idx": len(caption_rows),
+                    "image_idx": image_idx,
                     "caption": caption,
                 }
             )

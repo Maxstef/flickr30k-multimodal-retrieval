@@ -21,6 +21,9 @@ from src.models.mini_clip import MiniCLIP
 
 @st.cache_resource
 def load_mini_clip_model(vocab_size):
+    """
+    Load the trained Mini-CLIP model for inference.
+    """
     model = MiniCLIP(
         vocab_size=vocab_size,
         text_embedding_dim=EMBEDDING_DIM,
@@ -41,6 +44,13 @@ def load_mini_clip_model(vocab_size):
 
 @st.cache_data
 def load_caption_index():
+    """
+    Load the caption metadata and precomputed caption embeddings.
+
+    Returns:
+        tuple[pd.DataFrame, torch.Tensor]:
+            Caption metadata and normalized caption embeddings.
+    """
     captions_df = pd.read_csv(APP_DATA_DIR / "captions.csv")
     caption_embeddings = torch.load(
         APP_DATA_DIR / "caption_embeddings.pt",
@@ -51,5 +61,25 @@ def load_caption_index():
 
 @st.cache_data
 def load_vocab():
+    """
+    Load the vocabulary used by the Mini-CLIP text encoder.
+    """
     with open(APP_DATA_DIR / "vocab.json", "r") as f:
         return json.load(f)
+
+@st.cache_data
+def load_image_index():
+    """
+    Load the image metadata and precomputed image embeddings.
+
+    Returns:
+        tuple[pd.DataFrame, torch.Tensor]:
+            Image metadata and normalized image embeddings.
+    """
+    images_df = pd.read_csv(APP_DATA_DIR / "images.csv")
+    image_embeddings = torch.load(
+        APP_DATA_DIR / "image_embeddings.pt",
+        map_location="cpu",
+    )
+
+    return images_df, image_embeddings
