@@ -2,6 +2,13 @@ import streamlit as st
 from pathlib import Path
 import sys
 
+import numpy as np
+import torch
+import streamlit as st
+
+st.write("NumPy:", np.__version__)
+st.write("Torch:", torch.__version__)
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 if str(PROJECT_ROOT) not in sys.path:
