@@ -28,6 +28,7 @@ dependencies:
 
   # Packages installed via pip
   - pip:
+      - numpy==1.26.4
       - streamlit==1.58.0
       - datasets==3.6.0
       - tqdm==4.68.3
