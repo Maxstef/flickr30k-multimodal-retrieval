@@ -1,6 +1,7 @@
 from pathlib import Path
 import sys
 import shutil
+import json
 
 import pandas as pd
 import torch
@@ -81,6 +82,10 @@ def main():
     )
 
     model.eval()
+
+    # save vocab
+    with open(APP_DATA_DIR / "vocab.json", "w") as f:
+            json.dump(vocab, f)
 
     image_feature_extractor = get_resnet18_feature_extractor(DEVICE)
     image_transform = get_resnet18_transforms()
