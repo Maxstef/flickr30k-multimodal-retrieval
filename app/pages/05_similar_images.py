@@ -12,9 +12,16 @@ import streamlit as st
 from app.config import APP_IMAGES_DIR, TOP_K
 from app.components.display import make_thumbnail
 from app.components.footer import render_footer
-from app.utils.data_loader import load_image_index, load_mini_clip_model, load_vocab
 from app.utils.inference import encode_uploaded_image
 from app.utils.search import search_top_k
+
+from app.utils.data_loader import (
+    load_caption_index,
+    load_image_index,
+    load_mini_clip_model,
+    load_vocab,
+)
+from app.utils.explanations import explain_image_similarity
 
 
 st.set_page_config(
@@ -65,11 +72,23 @@ if uploaded_file is not None:
         vocab = load_vocab()
         model = load_mini_clip_model(vocab_size=len(vocab))
         images_df, image_embeddings = load_image_index()
+        captions_df, caption_embeddings = load_caption_index()
 
         query_embedding = encode_uploaded_image(
             image=image,
             model=model,
         )
+
+        query_caption_results = search_top_k(
+            query_embedding=query_embedding,
+            candidate_embeddings=caption_embeddings,
+            top_k=10,
+        )
+
+        query_captions = [
+            captions_df.iloc[result["index"]]["caption"]
+            for result in query_caption_results
+        ]
 
         results = search_top_k(
             query_embedding=query_embedding,
@@ -104,6 +123,19 @@ if uploaded_file is not None:
                 st.image(thumbnail, width="stretch")
                 st.markdown(f"**{rank}. Similarity: `{score:.3f}`**")
                 st.progress(float(max(0.0, min(score, 1.0))))
+
+                image_idx = image_row["image_idx"]
+                retrieved_captions = captions_df[
+                    captions_df["image_idx"] == image_idx
+                ]["caption"].tolist()
+
+                explanation = explain_image_similarity(
+                    query_captions=query_captions,
+                    retrieved_captions=retrieved_captions,
+                )
+
+                with st.expander("Why this image?"):
+                    st.markdown(explanation)
 else:
     st.info("Upload an image to retrieve similar images.")
 
