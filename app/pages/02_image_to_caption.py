@@ -10,6 +10,11 @@ from PIL import Image, UnidentifiedImageError
 import streamlit as st
 
 from app.config import TOP_K
+from app.components.display import (
+    get_similarity_color,
+    get_similarity_label,
+    show_similarity_guide,
+)
 from app.utils.data_loader import (
     load_caption_index,
     load_mini_clip_model,
@@ -17,8 +22,7 @@ from app.utils.data_loader import (
 )
 from app.utils.inference import encode_uploaded_image
 from app.utils.search import search_top_k
-from app.components.display import get_similarity_label, get_similarity_color
-from app.components.display import show_similarity_guide
+
 
 st.set_page_config(
     page_title="Image to Caption",
@@ -29,21 +33,17 @@ st.set_page_config(
 st.title("🖼️ Image → Caption")
 
 st.write(
-    """
-    Upload an image and Mini-CLIP will retrieve the most similar captions
-    from the prepared Flickr30k caption index.
-    """
+    "Upload an image and Mini-CLIP will retrieve the most similar captions "
+    "from the prepared Flickr30k caption index."
 )
 
-st.info(
-    """
-    Captions are retrieved from a prepared Flickr30k caption index. The model
-    searches for captions that are semantically similar to the uploaded image,
-    so results may describe related concepts rather than the exact image details.
-    """
-)
+st.subheader("📤 Upload an image")
 
-show_similarity_guide()
+uploaded_file = st.file_uploader(
+    "Upload an image",
+    type=["jpg", "jpeg", "png", "webp"],
+    label_visibility="collapsed",
+)
 
 top_k = st.slider(
     "Number of captions to retrieve",
@@ -52,10 +52,7 @@ top_k = st.slider(
     value=TOP_K,
 )
 
-uploaded_file = st.file_uploader(
-    "Upload an image",
-    type=["jpg", "jpeg", "png", "webp"],
-)
+st.divider()
 
 if uploaded_file is not None:
     try:
@@ -65,8 +62,12 @@ if uploaded_file is not None:
             "Unable to process this image. "
             "Please upload a valid JPG, JPEG, PNG, or WebP image."
         )
-        st.caption(f"Details: {error}")
+
+        with st.expander("Technical details"):
+            st.code(str(error))
+
         st.stop()
+
     col1, col2 = st.columns([1, 1])
 
     with col1:
@@ -96,13 +97,11 @@ if uploaded_file is not None:
             caption = captions_df.iloc[result["index"]]["caption"]
             score = result["score"]
             label = get_similarity_label(score)
+            color = get_similarity_color(score)
 
             with st.container(border=True):
                 st.markdown(f"**{rank}. {caption}**")
-
                 st.caption(label)
-
-                color = get_similarity_color(score)
 
                 st.markdown(
                     f"""
@@ -115,21 +114,18 @@ if uploaded_file is not None:
                 )
 
                 st.progress(max(0.0, min(score, 1.0)))
-
-    # with col2:
-    #     st.subheader("Retrieved captions")
-
-    #     for rank, result in enumerate(results, start=1):
-    #         caption = captions_df.iloc[result["index"]]["caption"]
-    #         score = result["score"]
-
-    #         st.markdown(
-    #             f"""
-    #             **{rank}. {caption}**
-
-    #             Similarity score: `{score:.3f}`
-    #             """
-    #         )
-    #         st.progress(float(max(0.0, min(score, 1.0))))
 else:
     st.info("Upload an image to retrieve matching captions.")
+
+st.divider()
+
+with st.expander("About this demo"):
+    st.write(
+        """
+        Captions are retrieved from a prepared Flickr30k caption index. The model
+        searches for captions that are semantically similar to the uploaded image,
+        so results may describe related concepts rather than the exact image details.
+        """
+    )
+
+show_similarity_guide()

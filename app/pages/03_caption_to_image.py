@@ -6,15 +6,15 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.append(str(PROJECT_ROOT))
 
-import streamlit as st
 from PIL import Image
+import streamlit as st
 
 from app.config import APP_IMAGES_DIR, TOP_K
 from app.components.display import (
-    show_similarity_guide,
-    get_similarity_label,
     get_similarity_color,
+    get_similarity_label,
     make_thumbnail,
+    show_similarity_guide,
 )
 from app.utils.data_loader import (
     load_caption_index,
@@ -35,21 +35,17 @@ st.set_page_config(
 st.title("📝 Caption → Image")
 
 st.write(
-    """
-    Enter a text description and Mini-CLIP will retrieve the most similar images
-    from the prepared Flickr30k image index.
-    """
+    "Enter a text description and Mini-CLIP will retrieve the most similar images "
+    "from the prepared Flickr30k image index."
 )
 
-st.info(
-    """
-    Images are retrieved from a prepared demo index of Flickr30k images. Results
-    are based on semantic similarity, so retrieved images may match the general
-    meaning of the caption rather than every exact detail.
-    """
-)
+st.subheader("✍️ Describe an image")
 
-show_similarity_guide()
+query = st.text_input(
+    "Enter a caption or description",
+    placeholder="A dog running through a grassy field",
+    label_visibility="collapsed",
+)
 
 top_k = st.slider(
     "Number of images to retrieve",
@@ -58,10 +54,7 @@ top_k = st.slider(
     value=TOP_K,
 )
 
-query = st.text_input(
-    "Enter a caption or description",
-    placeholder="A dog running through a grassy field",
-)
+st.divider()
 
 if query:
     with st.spinner("Searching images..."):
@@ -98,8 +91,8 @@ if query:
             with st.container(border=True):
                 image = Image.open(image_path)
                 thumbnail = make_thumbnail(image)
-                st.image(thumbnail, width="stretch")
 
+                st.image(thumbnail, width="stretch")
                 st.markdown(f"**{rank}. {label}**")
 
                 st.markdown(
@@ -125,3 +118,16 @@ if query:
                         st.markdown(f"- {caption}")
 else:
     st.info("Enter a caption to retrieve matching images.")
+
+st.divider()
+
+with st.expander("About this demo"):
+    st.write(
+        """
+        Images are retrieved from a prepared demo index of Flickr30k images.
+        Results are based on semantic similarity, so retrieved images may match
+        the general meaning of the caption rather than every exact detail.
+        """
+    )
+
+show_similarity_guide()
