@@ -1,4 +1,5 @@
 import streamlit as st
+from app.components.footer import render_footer
 
 st.set_page_config(
     page_title="Mini-CLIP Explorer",
@@ -10,27 +11,45 @@ st.title("🔎 Mini-CLIP Explorer")
 
 st.write(
     """
-    This application demonstrates a lightweight CLIP-style model trained for
-    image-text understanding using contrastive learning.
-
-    The model learns a shared embedding space where matching images and captions
-    are placed close together. This enables retrieval and similarity-based
-    image-text matching.
+    Explore a lightweight CLIP-style model trained for image-text retrieval
+    and similarity-based matching.
     """
 )
 
-st.subheader("What you can do")
-
-st.markdown(
+st.info(
     """
-    - **Image → Caption**: upload an image and retrieve the most similar captions.
-    - **Caption → Image**: enter a text description and find matching images.
-    - **Image + Caption Matching**: compare an image and caption using cosine similarity.
-    - **Similar Images**: upload an image and find visually or semantically similar images.
+    The app uses a prepared Flickr30k demo index with 1,000 images and 5,000 captions.
+    Upload an image, enter a caption, or compare image-text pairs using Mini-CLIP embeddings.
     """
 )
 
-st.subheader("Model summary")
+st.subheader("Try the app")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.markdown(
+        """
+        **🖼️ Image → Caption**  
+        Upload an image and retrieve the most similar captions.
+
+        **📝 Caption → Image**  
+        Enter a text description and find matching images.
+        """
+    )
+
+with col2:
+    st.markdown(
+        """
+        **🔗 Image + Caption Matching**  
+        Compare an image and caption using cosine similarity.
+
+        **🖼️ Similar Images**  
+        Upload an image and find visually or semantically similar images.
+        """
+    )
+
+st.subheader("Model performance")
 
 col1, col2, col3 = st.columns(3)
 
@@ -38,17 +57,19 @@ col1.metric("Validation F1-score", "0.889")
 col2.metric("Best threshold", "0.25")
 col3.metric("Validation accuracy", "0.888")
 
-st.info(
-    """
-    The demo uses a prepared subset of Flickr30k images with precomputed
-    embeddings to keep the app lightweight and fast.
-    """
-)
+with st.expander("About the model"):
+    st.write(
+        """
+        Mini-CLIP learns a shared embedding space where matching images and captions
+        are placed close together. This enables both retrieval and binary image-text
+        matching using cosine similarity.
+        """
+    )
 
 st.subheader("Project Repository")
 
 st.write(
-    "Explore the complete project, including notebooks, model implementations, "
+    "Explore the full project, including notebooks, model implementations, "
     "training pipelines, evaluation experiments, and this Streamlit application."
 )
 
@@ -57,8 +78,4 @@ st.link_button(
     "https://github.com/Maxstef/flickr30k-multimodal-retrieval",
 )
 
-st.divider()
-
-st.caption(
-    "Developed by Maksym Stefanko • Multimodal Image-Text Retrieval with Mini-CLIP"
-)
+render_footer()

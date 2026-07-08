@@ -15,6 +15,7 @@ from app.components.display import (
     get_similarity_label,
     show_similarity_guide,
 )
+from app.components.footer import render_footer
 from app.utils.data_loader import (
     load_caption_index,
     load_mini_clip_model,
@@ -129,3 +130,5 @@ with st.expander("About this demo"):
     )
 
 show_similarity_guide()
+
+render_footer()
