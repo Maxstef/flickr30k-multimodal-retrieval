@@ -1,5 +1,8 @@
 import streamlit as st
 from app.components.footer import render_footer
+# from app.components.sidebar import render_sidebar
+
+# render_sidebar()
 
 st.set_page_config(
     page_title="Mini-CLIP Explorer",
