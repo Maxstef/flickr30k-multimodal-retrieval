@@ -72,14 +72,14 @@ Retrieve visually and semantically similar images from the prepared Flickr30k im
 
 ## Model Evolution
 
-Rather than implementing a single solution, this project follows an incremental development approach. Each stage introduces a more powerful model while building on the knowledge and components from the previous one.
+Rather than implementing a single solution, this project follows an incremental development approach. Each stage introduces a more capable model while building on the knowledge and components from the previous one.
 
 | Stage | Model | Description |
 |-------|-------|-------------|
-| 1 | **Multimodal MLP** | Baseline binary image-text matching model using handcrafted image features. |
-| 2 | **Frozen ResNet18** | Transfer learning with a pretrained ResNet18 image encoder while keeping its weights frozen. |
-| 3 | **Fine-tuned ResNet18** | End-to-end optimization of the visual encoder for improved multimodal representations. |
-| 4 | **Mini-CLIP** | Lightweight CLIP-style model trained using contrastive learning to learn a shared embedding space for images and text. |
+| 1 | **Multimodal MLP** | Baseline image-text matching model trained on concatenated frozen ResNet18 image embeddings and TF-IDF caption features. The MLP learns nonlinear interactions between the two modalities. |
+| 2 | **Frozen ResNet18** | Neural multimodal model with a pretrained ResNet18 image encoder (frozen weights), a trainable text encoder, and a classification head. |
+| 3 | **Fine-tuned ResNet18** | End-to-end image-text matching model that fine-tunes the ResNet18 visual encoder to learn task-specific image representations. |
+| 4 | **Mini-CLIP** | Lightweight CLIP-style model trained with contrastive learning to project images and text into a shared embedding space for cross-modal retrieval. |
 
 The final Mini-CLIP model enables multiple downstream tasks, including image-to-caption retrieval, caption-to-image retrieval, image-text matching, and image similarity search, all using cosine similarity in the learned embedding space.
 
