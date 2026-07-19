@@ -1,85 +1,69 @@
-import sys
+"""Cached resource loaders for the Streamlit application."""
 
 import pandas as pd
 import streamlit as st
 import torch
-import json
 
-from app.config import PROJECT_ROOT, MODEL_PATH, APP_DATA_DIR
-
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.append(str(PROJECT_ROOT))
-
-from src.config import (
-    DEVICE,
-    EMBEDDING_DIM,
-    IMAGE_FEATURE_DIM,
-    PROJECTION_DIM,
-)
+from app.config import APP_DATA_DIR, MODEL_PATH
 from src.models.mini_clip import MiniCLIP
+from src.serving.model_loader import (
+    load_caption_index as load_caption_index_resources,
+    load_image_index as load_image_index_resources,
+    load_mini_clip_model as load_mini_clip_model_resource,
+    load_vocab as load_vocab_resource,
+)
 
 
 @st.cache_resource
-def load_mini_clip_model(vocab_size):
+def load_mini_clip_model(vocab_size: int) -> MiniCLIP:
     """
-    Load the trained Mini-CLIP model for inference.
+    Load and cache the trained Mini-CLIP model.
+
+    Args:
+        vocab_size:
+            Number of tokens in the vocabulary.
+
+    Returns:
+        MiniCLIP:
+            Model configured for inference.
     """
-    model = MiniCLIP(
+    return load_mini_clip_model_resource(
         vocab_size=vocab_size,
-        text_embedding_dim=EMBEDDING_DIM,
-        image_feature_dim=IMAGE_FEATURE_DIM,
-        projection_dim=PROJECTION_DIM,
-    ).to(DEVICE)
-
-    model.load_state_dict(
-        torch.load(
-            MODEL_PATH,
-            map_location=DEVICE,
-        )
+        model_path=MODEL_PATH,
     )
-
-    model.eval()
-    return model
 
 
 @st.cache_data
-def load_caption_index():
+def load_caption_index() -> tuple[pd.DataFrame, torch.Tensor]:
     """
-    Load the caption metadata and precomputed caption embeddings.
+    Load and cache caption metadata and embeddings.
 
     Returns:
         tuple[pd.DataFrame, torch.Tensor]:
             Caption metadata and normalized caption embeddings.
     """
-    captions_df = pd.read_csv(APP_DATA_DIR / "captions.csv")
-    caption_embeddings = torch.load(
-        APP_DATA_DIR / "caption_embeddings.pt",
-        map_location="cpu",
-    )
+    return load_caption_index_resources(APP_DATA_DIR)
 
-    return captions_df, caption_embeddings
 
 @st.cache_data
-def load_vocab():
+def load_vocab() -> dict:
     """
-    Load the vocabulary used by the Mini-CLIP text encoder.
+    Load and cache the Mini-CLIP vocabulary.
+
+    Returns:
+        dict:
+            Vocabulary used by the text encoder.
     """
-    with open(APP_DATA_DIR / "vocab.json", "r") as f:
-        return json.load(f)
+    return load_vocab_resource(APP_DATA_DIR)
+
 
 @st.cache_data
-def load_image_index():
+def load_image_index() -> tuple[pd.DataFrame, torch.Tensor]:
     """
-    Load the image metadata and precomputed image embeddings.
+    Load and cache image metadata and embeddings.
 
     Returns:
         tuple[pd.DataFrame, torch.Tensor]:
             Image metadata and normalized image embeddings.
     """
-    images_df = pd.read_csv(APP_DATA_DIR / "images.csv")
-    image_embeddings = torch.load(
-        APP_DATA_DIR / "image_embeddings.pt",
-        map_location="cpu",
-    )
-
-    return images_df, image_embeddings
+    return load_image_index_resources(APP_DATA_DIR)

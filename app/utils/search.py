@@ -1,20 +1,10 @@
-import torch
+"""Streamlit wrapper around shared retrieval utilities."""
+
+from src.serving.retrieval import retrieve_top_k
 
 
-def search_top_k(query_embedding, candidate_embeddings, top_k=3):
+def search_top_k(*args, **kwargs):
     """
-    Search top-k nearest embeddings using cosine similarity.
-
-    Assumes embeddings are already normalized.
+    Backward-compatible wrapper for the Streamlit application.
     """
-    similarities = query_embedding @ candidate_embeddings.T
-
-    scores, indices = similarities.squeeze(0).topk(top_k)
-
-    return [
-        {
-            "index": idx.item(),
-            "score": score.item(),
-        }
-        for score, idx in zip(scores, indices)
-    ]
+    return retrieve_top_k(*args, **kwargs)
