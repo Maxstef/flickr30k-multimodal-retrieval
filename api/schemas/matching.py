@@ -1,3 +1,5 @@
+"""Pydantic schemas for image-caption matching endpoints."""
+
 from pydantic import BaseModel, Field
 
 
