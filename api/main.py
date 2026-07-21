@@ -3,6 +3,7 @@
 from fastapi import FastAPI
 
 from api.routers.matching import router as matching_router
+from api.routers.retrieval import router as retrieval_router
 
 
 app = FastAPI(
@@ -15,6 +16,7 @@ app = FastAPI(
 )
 
 app.include_router(matching_router)
+app.include_router(retrieval_router)
 
 
 @app.get("/", tags=["General"])
