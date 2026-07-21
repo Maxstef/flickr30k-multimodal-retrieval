@@ -27,6 +27,9 @@ class ImageResult(BaseModel):
     filename: str = Field(
         description="Filename of the retrieved image.",
     )
+    image_url: str = Field(
+        description="URL for retrieving the actual image file.",
+    )
     score: float = Field(
         description="Cosine similarity between the caption and image embeddings.",
     )

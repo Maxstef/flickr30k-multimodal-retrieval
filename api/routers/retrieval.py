@@ -11,6 +11,7 @@ from fastapi import (
     Form,
     HTTPException,
     Query,
+    Request,
     UploadFile,
 )
 from PIL import Image, UnidentifiedImageError
@@ -122,6 +123,7 @@ async def image_to_caption(
     response_model=CaptionToImageResponse,
 )
 async def caption_to_image(
+    request: Request,
     caption: str = Form(...),
     top_k: int = Query(
         default=3,
@@ -186,18 +188,25 @@ async def caption_to_image(
         top_k=effective_top_k,
     )
 
-    results = [
-        ImageResult(
-            image_id=int(
-                images_df.iloc[item["index"]]["image_idx"]
-            ),
-            filename=str(
-                images_df.iloc[item["index"]]["filename"]
-            ),
-            score=item["score"],
+    results = []
+
+    for item in retrieved_items:
+        image_row = images_df.iloc[item["index"]]
+        filename = str(image_row["filename"])
+
+        results.append(
+            ImageResult(
+                image_id=int(image_row["image_idx"]),
+                filename=filename,
+                image_url=str(
+                    request.url_for(
+                        "get_image",
+                        filename=filename,
+                    )
+                ),
+                score=item["score"],
+            )
         )
-        for item in retrieved_items
-    ]
 
     return CaptionToImageResponse(
         query=normalized_caption,
