@@ -27,6 +27,7 @@ from api.schemas import (
     CaptionToImageResponse,
     ImageResult,
     ImageToCaptionResponse,
+    SimilarImagesResponse,
 )
 from src.serving.inference import encode_image, encode_text
 from src.serving.retrieval import retrieve_top_k
@@ -210,6 +211,108 @@ async def caption_to_image(
 
     return CaptionToImageResponse(
         query=normalized_caption,
+        top_k=effective_top_k,
+        results=results,
+    )
+
+@router.post(
+    "/similar-images",
+    response_model=SimilarImagesResponse,
+)
+async def similar_images(
+    request: Request,
+    image: UploadFile = File(...),
+    top_k: int = Query(
+        default=3,
+        ge=1,
+        le=20,
+        description="Number of similar images to retrieve.",
+    ),
+    model=Depends(get_model),
+    image_index: tuple[pd.DataFrame, torch.Tensor] = Depends(
+        get_image_index
+    ),
+) -> SimilarImagesResponse:
+    """
+    Retrieve images most similar to an uploaded image.
+    """
+    if image.content_type is None or not image.content_type.startswith("image/"):
+        raise HTTPException(
+            status_code=400,
+            detail="Uploaded file must be an image.",
+        )
+
+    try:
+        image_bytes = await image.read()
+        pil_image = Image.open(BytesIO(image_bytes))
+        pil_image.load()
+    except (UnidentifiedImageError, OSError) as exc:
+        raise HTTPException(
+            status_code=400,
+            detail="The uploaded file is not a valid image.",
+        ) from exc
+
+    images_df, image_embeddings = image_index
+
+    if images_df.empty or image_embeddings.shape[0] == 0:
+        raise HTTPException(
+            status_code=503,
+            detail="Image retrieval index is empty.",
+        )
+
+    required_columns = {"image_idx", "filename"}
+    missing_columns = required_columns.difference(images_df.columns)
+
+    if missing_columns:
+        missing_columns_text = ", ".join(sorted(missing_columns))
+
+        raise HTTPException(
+            status_code=500,
+            detail=(
+                "Image metadata is missing required columns: "
+                f"{missing_columns_text}."
+            ),
+        )
+
+    effective_top_k = min(
+        top_k,
+        len(images_df),
+        image_embeddings.shape[0],
+    )
+
+    image_embedding = encode_image(
+        image=pil_image,
+        model=model,
+    )
+
+    retrieved_items = retrieve_top_k(
+        query_embedding=image_embedding,
+        candidate_embeddings=image_embeddings,
+        top_k=effective_top_k,
+    )
+
+    results = []
+
+    for item in retrieved_items:
+        image_row = images_df.iloc[item["index"]]
+        filename = str(image_row["filename"])
+
+        results.append(
+            ImageResult(
+                image_id=int(image_row["image_idx"]),
+                filename=filename,
+                image_url=str(
+                    request.url_for(
+                        "get_image",
+                        filename=filename,
+                    )
+                ),
+                score=item["score"],
+            )
+        )
+
+    return SimilarImagesResponse(
+        filename=image.filename or "uploaded-image",
         top_k=effective_top_k,
         results=results,
     )

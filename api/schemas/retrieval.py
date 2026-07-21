@@ -62,3 +62,18 @@ class CaptionToImageResponse(BaseModel):
     results: list[ImageResult] = Field(
         description="Images ranked by similarity to the query caption.",
     )
+
+class SimilarImagesResponse(BaseModel):
+    """
+    Response returned by the similar-images retrieval endpoint.
+    """
+
+    filename: str = Field(
+        description="Filename of the uploaded query image.",
+    )
+    top_k: int = Field(
+        description="Number of requested retrieval results.",
+    )
+    results: list[ImageResult] = Field(
+        description="Images ranked by similarity to the uploaded image.",
+    )

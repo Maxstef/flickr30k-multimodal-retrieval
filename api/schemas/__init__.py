@@ -6,6 +6,7 @@ from api.schemas.retrieval import (
     CaptionToImageResponse,
     ImageResult,
     ImageToCaptionResponse,
+    SimilarImagesResponse,
 )
 
 
@@ -15,4 +16,5 @@ __all__ = [
     "ImageCaptionMatchResponse",
     "ImageResult",
     "ImageToCaptionResponse",
+    "SimilarImagesResponse",
 ]
