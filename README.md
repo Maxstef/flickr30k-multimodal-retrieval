@@ -6,7 +6,11 @@
 
 *A lightweight CLIP-style model for image-text retrieval trained on the Flickr30k dataset using contrastive learning.*
 
-🚀 **Live Demo:** https://flickr30k-mini-clip-explorer.streamlit.app/home
+🚀 **Live Demo (Streamlit):** https://flickr30k-mini-clip-explorer.streamlit.app/home
+
+🌐 **REST API (Swagger):** https://flickr30k-multimodal-retrieval.onrender.com/docs
+
+📖 **REST API (ReDoc):** https://flickr30k-multimodal-retrieval.onrender.com/redoc
 
 📂 **Project Repository:** https://github.com/Maxstef/flickr30k-multimodal-retrieval
 
@@ -18,9 +22,40 @@ This project explores multimodal representation learning by building a lightweig
 
 Starting from a simple multimodal baseline, the project progressively introduces transfer learning, contrastive learning, and retrieval techniques to learn a shared embedding space for images and text. Throughout the project, multiple model architectures are implemented, evaluated, and compared, demonstrating how modern multimodal representations significantly improve image-text understanding.
 
-The final result is an interactive Streamlit application that showcases the capabilities of the trained Mini-CLIP model through semantic retrieval, image-text matching, and image similarity search.
+The final solution consists of both an interactive Streamlit application and a production-style FastAPI service exposing the Mini-CLIP model through a REST API. Together, they demonstrate semantic retrieval, image-text matching, and image similarity search using a shared embedding space learned through contrastive learning.
 
-## Features
+## Architecture Diagram
+
+                         Mini-CLIP Project Architecture
+
+                 ┌─────────────────────────────┐
+                 │     Trained Mini-CLIP       │
+                 │  (Shared Image/Text Space)  │
+                 └──────────────┬──────────────┘
+                                │
+                    Shared Inference Layer
+                                │
+        ┌───────────────────────┼────────────────────────┐
+        │                       │                        │
+        ▼                       ▼                        ▼
+  Image Encoder          Text Encoder          Retrieval Engine
+ (ResNet18 CNN)       (Token Embeddings +      (Cosine Similarity)
+                         Mean Pooling)
+        │                       │                        │
+        └───────────────────────┴────────────────────────┘
+                                │
+                  Precomputed Image & Caption Embeddings
+                                │
+                ┌───────────────┴───────────────┐
+                │                               │
+                ▼                               ▼
+      Streamlit Web App                FastAPI REST API
+      - Interactive UI                 - Image → Caption
+      - Visual Demo                    - Caption → Image
+      - Similar Images                 - Similar Images
+      - Image Matching                 - Image + Caption Match
+
+## Application Features
 
 The interactive Streamlit application showcases several multimodal retrieval and matching tasks powered by the trained Mini-CLIP model.
 
@@ -70,6 +105,27 @@ Retrieve visually and semantically similar images from the prepared Flickr30k im
   <img src="assets/gifs/similar_images.gif" width="800">
 </p>
 
+## REST API
+
+In addition to the interactive Streamlit application, the project provides a publicly available FastAPI service for programmatic access to the Mini-CLIP model.
+
+### Live API
+
+- Swagger UI: https://flickr30k-multimodal-retrieval.onrender.com/docs
+- ReDoc: https://flickr30k-multimodal-retrieval.onrender.com/redoc
+
+### Available Endpoints
+
+| Endpoint | Description |
+|-----------|-------------|
+| `POST /image-caption-match` | Predict whether an image and caption semantically match. |
+| `POST /image-to-caption` | Retrieve the most relevant captions for an uploaded image. |
+| `POST /caption-to-image` | Retrieve the most relevant images for a text query. |
+| `POST /similar-images` | Retrieve visually and semantically similar images. |
+| `GET /images/{filename}` | Download an image returned by retrieval endpoints. |
+
+The API is implemented using **FastAPI**, automatically generates OpenAPI documentation, and shares the same inference pipeline as the Streamlit application.
+
 ## Model Evolution
 
 Rather than implementing a single solution, this project follows an incremental development approach. Each stage introduces a more capable model while building on the knowledge and components from the previous one.
@@ -103,13 +159,14 @@ More importantly, learning a shared embedding space enables multiple downstream 
 ```text
 flickr30k-multimodal-retrieval/
 │
+├── api/                 # FastAPI REST service
 ├── app/                 # Streamlit application
 ├── app_data/            # Demo images, embeddings, and metadata
 ├── assets/              # README screenshots, GIFs, and diagrams
 ├── models/              # Trained model checkpoints
 ├── notebooks/           # End-to-end development notebooks
 ├── scripts/             # Utility and data preparation scripts
-├── src/                 # Core source code
+├── src/                 # Core source code & Shared inference and retrieval logic
 │
 ├── environment.yml      # Conda environment
 ├── requirements.txt     # Python dependencies
@@ -121,12 +178,14 @@ flickr30k-multimodal-retrieval/
 - Python
 - PyTorch
 - TorchVision
+- FastAPI
+- Uvicorn
 - Streamlit
+- Docker
 - NumPy
 - Pandas
 - scikit-learn
 - Hugging Face Datasets
-- Matplotlib
 - Pillow
 
 ## Dataset
@@ -185,6 +244,29 @@ The application will be available at:
 ```
 http://localhost:8501
 ```
+### Run the REST API
+
+```bash
+uvicorn api.main:app --reload
+```
+
+The API will be available at:
+
+```
+http://localhost:8000
+```
+
+Interactive documentation:
+
+```
+http://localhost:8000/docs
+```
+
+Alternative documentation:
+
+```
+http://localhost:8000/redoc
+```
 
 ## Future Improvements
 
@@ -219,3 +301,7 @@ This project provided hands-on experience with:
 - Cosine similarity search for cross-modal retrieval
 - Building and deploying interactive machine learning applications with Streamlit
 - Organizing an end-to-end deep learning project from experimentation to deployment
+- Designing and implementing REST APIs with FastAPI
+- Building reusable ML inference services
+- Dockerizing machine learning applications
+- Deploying cloud-hosted inference services on Render
