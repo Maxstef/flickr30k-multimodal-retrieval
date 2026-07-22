@@ -26,6 +26,7 @@ The final solution consists of both an interactive Streamlit application and a p
 
 ## Architecture Diagram
 
+```text
                          Mini-CLIP Project Architecture
 
                  ┌─────────────────────────────┐
@@ -54,6 +55,7 @@ The final solution consists of both an interactive Streamlit application and a p
       - Visual Demo                    - Caption → Image
       - Similar Images                 - Similar Images
       - Image Matching                 - Image + Caption Match
+```
 
 ## Application Features
 
