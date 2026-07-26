@@ -150,7 +150,7 @@ The models were evaluated on the Flickr30k validation set using binary image-tex
 | Multimodal MLP | 0.641 | 0.715 | 0.470 | 0.567 | 5.82 min |
 | Frozen ResNet18 | 0.740 | 0.667 | 0.957 | 0.786 | 11.14 min |
 | Fine-tuned ResNet18 | 0.761 | 0.755 | 0.775 | 0.765 | 2 h 46 min |
-| **Mini-CLIP (Contrastive Learning)** | **0.888** | **0.880** | **0.899** | **0.889** | **5.61 min** |
+| **Mini-CLIP (Contrastive Learning)** | **0.888** | **0.880** | **0.899** | **0.889** | **15.61 min** |
 
 The results demonstrate the effectiveness of contrastive learning for multimodal representation learning. While the baseline and transfer learning models provide solid image-text matching performance, the Mini-CLIP model achieves the best overall balance across all evaluation metrics.
 
